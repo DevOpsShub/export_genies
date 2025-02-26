@@ -27,53 +27,73 @@ This project deploys a .NET Core backend, ReactJS frontend, and PostgreSQL datab
 git clone https://github.com/DevOpsShub/export_genies/
 cd dotnet-postgresql-reactjs-crud-app
 ```
-#### 2. Set up for Terraform
 
- Run : aws configure    //setup the creds
- 
- cd terrafom
+### 2. Set up for Terraform
 
- Initialize Terraform:
- Run : terraform init
- 
- Review and Apply:
- terraform plan
- terraform apply
- 
- Configure kubectl:
- aws eks update-kubeconfig --region us-east-1 --name crud-app-cluster
+Run:
+```bash
+aws configure    # setup the credentials
+```
 
- kubectl apply -f k8s/db-credentials.yaml
+Navigate to the Terraform directory:
+```bash
+cd terraform
+```
 
-  kubectl get nodes
+Initialize Terraform:
+```bash
+terraform init
+```
 
-  4. Set Up GitHub Actions Secrets
+Review and Apply:
+```bash
+terraform plan
+terraform apply
+```
+
+Configure `kubectl`:
+```bash
+aws eks update-kubeconfig --region us-east-1 --name crud-app-cluster
+kubectl apply -f k8s/db-credentials.yaml
+kubectl get nodes
+```
+
+### 3. Set Up GitHub Actions Secrets
 Go to your GitHub repo → Settings → Secrets and variables → Actions.
 Add these secrets:
-AWS_ACCESS_KEY_ID: Your AWS Access Key ID.
-AWS_SECRET_ACCESS_KEY: Your AWS Secret Access Key.
+- `AWS_ACCESS_KEY_ID`: Your AWS Access Key ID.
+- `AWS_SECRET_ACCESS_KEY`: Your AWS Secret Access Key.
 
-5. Deploy the Application
-The CI/CD pipeline automatically deploys on push to main. To test manually:
+### 4. Deploy the Application
+The CI/CD pipeline automatically deploys on push to `main`. To test manually:
 
 Update Dockerfiles (if not already present):
-DotNetCoreReactJsPostgreSQLCrudApp/Dockerfile and reactjs-crud-app/Dockerfile 
+- `DotNetCoreReactJsPostgreSQLCrudApp/Dockerfile`
+- `reactjs-crud-app/Dockerfile`
 
-Monitor Workflow:
-Go to Actions tab in GitHub to see the pipeline run.
-Images are built, pushed to ECR, and deployed to EKS with versioned tags (e.g., v1.0.1).
+### 5. Kubernetes Configuration
+The `k8s/` directory contains Kubernetes manifests:
+- `db-credentials.yaml`
+- `postgres.yaml`
+- `backend.yaml`
+- `frontend.yaml`
+- `backend-hpa.yaml`
+- `frontend-hpa.yaml`
 
-#CI CD will deploy the all the Workloads in kubernatives
+### 6. Configure GitHub Actions Workflow
+Verify `.github/workflows/cicd.yml` file with the CI/CD pipeline configuration.
 
-For CLOUDwatch follow the clowdwatch in docunemt
+### 7. Monitor Workflow
+Go to the **Actions** tab in GitHub to see the pipeline run.
+- Images are built, pushed to ECR, and deployed to EKS with versioned tags (e.g., v1.0.1).
 
+### 8. CloudWatch Setup
+Refer to the documentation for CloudWatch monitoring configuration.
 
-Project Structure
-DotNetCoreReactJsPostgreSQLCrudApp/: .NET backend code and Dockerfile.
-reactjs-crud-app/: React frontend code and Dockerfile.
-k8s/: Kubernetes manifests (deployments, services, secrets, etc.).
-terraform-eks/: Terraform files for AWS infrastructure.
-.github/workflows/cicd.yml: CI/CD pipeline configuration.
-
- 
- 
+## Project Structure
+```
+DotNetCoreReactJsPostgreSQLCrudApp/  # .NET backend code and Dockerfile
+reactjs-crud-app/                   # React frontend code and Dockerfile
+k8s/                                 # Kubernetes manifests (deployments, services, secrets, etc.)
+terraform-eks/                       # Terraform files for AWS infrastructure
+.github/workflows/cicd.yml           # CI/CD pipeline configuration
