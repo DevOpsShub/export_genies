@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: .dkr.ecr.us-east-1.amazonaws.com/dotnet-backend:v0.0.0
+          ports:
+            - containerPort: 5000
+          env:
+            - name: ASPNETCORE_URLS
+              value: "http://+:5000"
+            - name: ConnectionStrings__DefaultConnection
+              value: "Host=postgres;Database=cruddb;Username=postgres;Password=$(DB_PASSWORD)"
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+          resources:
+            requests:
+              cpu: "250m"  # 0.25 CPU
+              memory: "256Mi"
+            limits:
+              cpu: "500m"  # 0.5 CPU
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  ports:
+    - port: 5000
+      targetPort: 5000
+  selector:
+    app: backend
+  type: ClusterIP
